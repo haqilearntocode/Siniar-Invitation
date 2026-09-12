@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 240" width="100%" height="100%">
+  <defs>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFC107" />
+      <stop offset="50%" stop-color="#FF9800" />
+      <stop offset="100%" stop-color="#E65100" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="4" flood-color="#000000" flood-opacity="0.9"/>
+    </filter>
+  </defs>
+  
+  <style>
+    .title-main {
+      font-family: 'Mochiy Pop P One', 'Bangers', 'Impact', sans-serif;
+      font-weight: 900;
+      text-anchor: middle;
+    }
+  </style>
+
+  <!-- Word 1: Siniar -->
+  <g filter="url(#shadow)">
+    <!-- Black Outer Stroke -->
+    <text x="300" y="95" class="title-main" font-size="78" fill="none" stroke="#000000" stroke-width="18" stroke-linejoin="round">Siniar</text>
+    <!-- White Inner Stroke -->
+    <text x="300" y="95" class="title-main" font-size="78" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linejoin="round">Siniar</text>
+    <!-- Main Fill -->
+    <text x="300" y="95" class="title-main" font-size="78" fill="url(#orangeGrad)">Siniar</text>
+  </g>
+
+  <!-- Word 2: SHOW -->
+  <g filter="url(#shadow)">
+    <!-- Black Outer Stroke -->
+    <text x="300" y="195" class="title-main" font-size="96" fill="none" stroke="#000000" stroke-width="20" stroke-linejoin="round" letter-spacing="4">SHOW</text>
+    <!-- White Inner Stroke -->
+    <text x="300" y="195" class="title-main" font-size="96" fill="none" stroke="#FFFFFF" stroke-width="10" stroke-linejoin="round" letter-spacing="4">SHOW</text>
+    <!-- Main Fill -->
+    <text x="300" y="195" class="title-main" font-size="96" fill="url(#orangeGrad)" letter-spacing="4">SHOW</text>
+  </g>
+</svg>

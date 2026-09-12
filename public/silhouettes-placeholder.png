@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 280" width="100%" height="100%">
+  <g fill="#080808">
+    <!-- Stage Base / Cutouts -->
+    <path d="M 0 280 L 500 280 L 500 220 Q 375 210 250 220 Q 125 210 0 220 Z" />
+    <path d="M 20 220 C 30 160, 50 140, 70 220 M 60 220 C 70 130, 90 110, 110 220 M 140 220 C 150 150, 170 130, 180 220 M 320 220 C 340 140, 360 120, 380 220 M 410 220 C 430 150, 450 130, 470 220" stroke="#000" stroke-width="14" stroke-linecap="round" />
+    
+    <!-- Man 1 (Left Silhouette Facing Away) -->
+    <g transform="translate(40, 10)">
+      <!-- Head -->
+      <ellipse cx="100" cy="55" rx="24" ry="30" fill="#040404" />
+      <!-- Hair outline -->
+      <path d="M 74 50 C 72 30, 96 20, 120 28 C 126 35, 124 60, 120 62 Z" fill="#000" />
+      <!-- Torso & Arms hands on hips -->
+      <path d="M 85 80 L 115 80 L 142 105 L 150 150 L 138 210 L 135 270 L 65 270 L 62 210 L 50 150 L 58 105 Z" fill="#080808" />
+      <!-- Arms -->
+      <path d="M 58 105 C 42 130, 32 160, 44 195 C 50 200, 64 190, 70 165 Z" fill="#000000" />
+      <path d="M 142 105 C 158 130, 168 160, 156 195 C 150 200, 136 190, 130 165 Z" fill="#000000" />
+    </g>
+
+    <!-- Man 2 (Right Silhouette Facing Away) -->
+    <g transform="translate(260, 15)">
+      <!-- Head -->
+      <ellipse cx="100" cy="58" rx="23" ry="28" fill="#040404" />
+      <!-- Hair outline -->
+      <path d="M 76 52 C 74 32, 98 22, 122 30 C 128 38, 124 62, 120 64 Z" fill="#000" />
+      <!-- Torso & Arms relaxed -->
+      <path d="M 84 82 L 116 82 L 148 108 L 155 155 L 142 220 L 138 265 L 62 265 L 58 220 L 45 155 L 52 108 Z" fill="#080808" />
+      <!-- Arms -->
+      <path d="M 148 108 C 162 135, 168 165, 154 195 C 148 198, 136 188, 132 165 Z" fill="#000" />
+      <path d="M 52 108 C 38 135, 32 165, 46 195 C 52 198, 64 188, 68 165 Z" fill="#000" />
+    </g>
+  </g>
+</svg>
