@@ -18,6 +18,8 @@ export default function App() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [guestName, setGuestName] = useState('teman teman');
   const [showPosterModal, setShowPosterModal] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   // Initialize Audio Element
   useEffect(() => {
@@ -54,11 +56,11 @@ export default function App() {
     }
   };
 
-  // Handle Share to Instagram Story
-  const handleShareToIG = async (e) => {
+  // Generate Preview Image (Tahap 1)
+  const handleGenerateImage = async (e) => {
     e.stopPropagation();
     if (!coverRef.current) return;
-    
+    setIsGenerating(true);
     try {
       const canvas = await html2canvas(coverRef.current, { 
         backgroundColor: '#000000', 
@@ -66,31 +68,32 @@ export default function App() {
         useCORS: true, 
         logging: false 
       });
-      
-      canvas.toBlob(async (blob) => {
-        if (!blob) throw new Error('Blob gagal dibuat');
-        
-        const file = new File([blob], 'undangan.png', { type: 'image/png' });
-        
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({ 
-            files: [file], 
-            title: 'Undangan Siniar SHOW' 
-          });
-        } else {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = 'undangan.png';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-        }
-      }, 'image/png');
+      setGeneratedImage(canvas.toDataURL('image/png'));
     } catch (error) {
-      console.error('Error saat capture:', error);
-      alert('Gagal membagikan gambar. Silakan coba lagi.');
+      console.error('Error:', error);
+      alert('Gagal memproses e-flyer.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // Final Share (Tahap 2)
+  const handleFinalShare = async () => {
+    try {
+      const res = await fetch(generatedImage);
+      const blob = await res.blob();
+      const file = new File([blob], 'Undangan-Siniar.png', { type: 'image/png' });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Undangan Siniar SHOW' });
+      } else {
+        const link = document.createElement('a');
+        link.href = generatedImage;
+        link.download = 'Undangan-Siniar.png';
+        link.click();
+      }
+    } catch (error) {
+      console.error('Share error:', error);
     }
   };
 
@@ -236,11 +239,11 @@ export default function App() {
                 <Sparkles className="w-6 h-6" />
               </button>
               <button
-                onClick={handleShareToIG}
+                onClick={handleGenerateImage}
                 className="w-full py-3 px-6 bg-transparent border-2 border-yellow-400 text-yellow-400 font-['Bebas_Neue'] text-xl tracking-widest uppercase font-extrabold rounded-2xl shadow-[6px_6px_0_rgba(0,0,0,1)] active:scale-95 transition-all flex items-center justify-center gap-2 rotate-1"
               >
                 <Share2 className="w-5 h-5" />
-                <span>SHARE KE IG</span>
+                <span>{isGenerating ? 'Memproses...' : 'SHARE KE IG'}</span>
               </button>
             </div>
           </div>
@@ -273,7 +276,7 @@ export default function App() {
 
             {/* ---------------- HOME TAB ---------------- */}
             {activeTab === 'home' && (
-              <div className="w-full min-h-[75vh] flex flex-col items-center text-center animate-fadeIn pt-32 pb-8">
+              <div className="w-full min-h-[70vh] flex flex-col items-center justify-center text-center animate-fadeIn py-6">
                 
                 {/* Small Header on Torn White Paper */}
                 <div className="mb-2 flex flex-col items-center">
@@ -519,6 +522,21 @@ export default function App() {
         </div>
 
       </div>
+
+      {generatedImage && (
+        <div className="fixed inset-0 z-[9999] bg-black/90 flex flex-col items-center justify-center p-4 backdrop-blur-sm">
+          <p className="text-white mb-4 font-bold tracking-widest">PREVIEW E-FLYER</p>
+          <img src={generatedImage} alt="Preview" className="w-[80%] max-w-sm rounded-xl border border-yellow-500/50 shadow-[6px_6px_0_rgba(0,0,0,1)] mb-6" />
+          <div className="flex gap-4">
+            <button onClick={() => setGeneratedImage(null)} className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-bold border-2 border-black">
+              Batal
+            </button>
+            <button onClick={handleFinalShare} className="px-6 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 text-black rounded-xl font-bold border-2 border-black flex items-center gap-2">
+              Bagikan / Simpan
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
