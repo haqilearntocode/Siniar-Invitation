@@ -18,7 +18,6 @@ export default function App() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [guestName, setGuestName] = useState('teman teman');
   const [showPosterModal, setShowPosterModal] = useState(false);
-  const [isCapturing, setIsCapturing] = useState(false);
 
   // Initialize Audio Element
   useEffect(() => {
@@ -58,64 +57,41 @@ export default function App() {
   // Handle Share to Instagram Story
   const handleShareToIG = async (e) => {
     e.stopPropagation();
-    
     if (!coverRef.current) return;
     
-    setIsCapturing(true);
-    
-    setTimeout(async () => {
-      try {
-        const canvas = await html2canvas(coverRef.current, {
-          backgroundColor: '#000000',
-          scale: 3,
-          useCORS: true,
-          logging: false,
-          width: coverRef.current.offsetWidth,
-          height: coverRef.current.offsetHeight,
-        });
-
-        canvas.toBlob(async (blob) => {
-          if (!blob) {
-            setIsCapturing(false);
-            return;
-          }
-
-          const file = new File([blob], 'siniar-show-invitation.png', { type: 'image/png' });
-
-          if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-            try {
-              await navigator.share({
-                files: [file],
-                title: 'SINIAR SHOW - Live Podcast Event',
-                text: `Hai ${guestName}! Kamu diundang ke SINIAR SHOW - Live Podcast Event by KKP Network. 10 Desember 2026!`,
-              });
-            } catch (err) {
-              if (err.name !== 'AbortError') {
-                downloadImage(blob);
-              }
-            }
-          } else {
-            downloadImage(blob);
-          }
-
-          setIsCapturing(false);
-        }, 'image/png');
-      } catch (error) {
-        console.error('Capture failed:', error);
-        setIsCapturing(false);
-      }
-    }, 150);
-  };
-
-  const downloadImage = (blob) => {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'siniar-show-invitation.png';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    try {
+      const canvas = await html2canvas(coverRef.current, { 
+        backgroundColor: '#000000', 
+        scale: 2, 
+        useCORS: true, 
+        logging: false 
+      });
+      
+      canvas.toBlob(async (blob) => {
+        if (!blob) throw new Error('Blob gagal dibuat');
+        
+        const file = new File([blob], 'undangan.png', { type: 'image/png' });
+        
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ 
+            files: [file], 
+            title: 'Undangan Siniar SHOW' 
+          });
+        } else {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'undangan.png';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }
+      }, 'image/png');
+    } catch (error) {
+      console.error('Error saat capture:', error);
+      alert('Gagal membagikan gambar. Silakan coba lagi.');
+    }
   };
 
   // Form & RSVP state
@@ -188,7 +164,7 @@ export default function App() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-black flex justify-center items-center font-sans antialiased text-white select-none overflow-hidden relative m-0 p-0">
+    <div className="fixed inset-0 w-full h-[100dvh] bg-black flex justify-center items-center font-sans antialiased text-white select-none overflow-hidden m-0 p-0">
       
         {/* Desktop Background Blur */}
         <div 
@@ -251,24 +227,22 @@ export default function App() {
             </div>
 
             {/* Actions Buttons */}
-            {!isCapturing && (
-              <div className="flex flex-col gap-3 w-full max-w-xs z-10">
-                <button
-                  onClick={handleOpenInvitation}
-                  className="w-full py-4 px-8 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 text-black font-['Bebas_Neue'] text-2xl tracking-widest uppercase font-extrabold italic rounded-2xl shadow-[6px_6px_0_rgba(0,0,0,1)] animate-pulse active:scale-95 active:shadow-none transition-all border-2 border-black flex items-center justify-center gap-2 cursor-pointer rotate-1"
-                >
-                  <span>BUKA UNDANGAN</span>
-                  <Sparkles className="w-6 h-6" />
-                </button>
-                <button
-                  onClick={handleShareToIG}
-                  className="w-full py-3 px-6 bg-transparent border-2 border-yellow-400 text-yellow-400 font-['Bebas_Neue'] text-xl tracking-widest uppercase font-extrabold rounded-2xl shadow-[6px_6px_0_rgba(0,0,0,1)] active:scale-95 transition-all flex items-center justify-center gap-2 rotate-1"
-                >
-                  <Share2 className="w-5 h-5" />
-                  <span>SHARE KE IG</span>
-                </button>
-              </div>
-            )}
+            <div data-html2canvas-ignore="true" className="flex flex-col gap-3 w-full max-w-xs z-10">
+              <button
+                onClick={handleOpenInvitation}
+                className="w-full py-4 px-8 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 text-black font-['Bebas_Neue'] text-2xl tracking-widest uppercase font-extrabold italic rounded-2xl shadow-[6px_6px_0_rgba(0,0,0,1)] animate-pulse active:scale-95 active:shadow-none transition-all border-2 border-black flex items-center justify-center gap-2 cursor-pointer rotate-1"
+              >
+                <span>BUKA UNDANGAN</span>
+                <Sparkles className="w-6 h-6" />
+              </button>
+              <button
+                onClick={handleShareToIG}
+                className="w-full py-3 px-6 bg-transparent border-2 border-yellow-400 text-yellow-400 font-['Bebas_Neue'] text-xl tracking-widest uppercase font-extrabold rounded-2xl shadow-[6px_6px_0_rgba(0,0,0,1)] active:scale-95 transition-all flex items-center justify-center gap-2 rotate-1"
+              >
+                <Share2 className="w-5 h-5" />
+                <span>SHARE KE IG</span>
+              </button>
+            </div>
           </div>
 
 
