@@ -19,6 +19,7 @@ export default function App() {
   const [guestName, setGuestName] = useState('teman teman');
   const [showPosterModal, setShowPosterModal] = useState(false);
   const [generatedImage, setGeneratedImage] = useState(null);
+  const [imageBlob, setImageBlob] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Initialize Audio Element
@@ -56,7 +57,7 @@ export default function App() {
     }
   };
 
-  // Generate Preview Image (Tahap 1)
+  // Generate Preview Image (Tahap 1) - Optimized with Blob
   const handleGenerateImage = async (e) => {
     e.stopPropagation();
     if (!coverRef.current) return;
@@ -68,7 +69,11 @@ export default function App() {
         useCORS: true, 
         logging: false 
       });
-      setGeneratedImage(canvas.toDataURL('image/png'));
+      canvas.toBlob((blob) => {
+        if (!blob) throw new Error('Blob gagal dibuat');
+        setImageBlob(blob);
+        setGeneratedImage(URL.createObjectURL(blob));
+      }, 'image/png', 1.0);
     } catch (error) {
       console.error('Error:', error);
       alert('Gagal memproses e-flyer.');
@@ -77,23 +82,28 @@ export default function App() {
     }
   };
 
-  // Final Share (Tahap 2)
+  // Final Share (Tahap 2) - Using stored Blob
   const handleFinalShare = async () => {
     try {
-      const res = await fetch(generatedImage);
-      const blob = await res.blob();
-      const file = new File([blob], 'Undangan-Siniar.png', { type: 'image/png' });
+      if (!imageBlob) throw new Error('Tidak ada gambar untuk dibagikan');
+      const file = new File([imageBlob], 'Undangan-Siniar-SHOW.png', { type: 'image/png' });
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'Undangan Siniar SHOW' });
+        await navigator.share({ 
+          files: [file], 
+          title: 'Undangan Siniar SHOW' 
+        });
       } else {
         const link = document.createElement('a');
         link.href = generatedImage;
-        link.download = 'Undangan-Siniar.png';
+        link.download = 'Undangan-Siniar-SHOW.png';
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
       }
     } catch (error) {
       console.error('Share error:', error);
+      alert('Gagal membagikan file. Silakan simpan terlebih dahulu.');
     }
   };
 
@@ -528,7 +538,11 @@ export default function App() {
           <p className="text-white mb-4 font-bold tracking-widest">PREVIEW E-FLYER</p>
           <img src={generatedImage} alt="Preview" className="w-[80%] max-w-sm rounded-xl border border-yellow-500/50 shadow-[6px_6px_0_rgba(0,0,0,1)] mb-6" />
           <div className="flex gap-4">
-            <button onClick={() => setGeneratedImage(null)} className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-bold border-2 border-black">
+            <button onClick={() => {
+              if (generatedImage) URL.revokeObjectURL(generatedImage);
+              setGeneratedImage(null);
+              setImageBlob(null);
+            }} className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-bold border-2 border-black">
               Batal
             </button>
             <button onClick={handleFinalShare} className="px-6 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 text-black rounded-xl font-bold border-2 border-black flex items-center gap-2">
