@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Home, Users, Calendar, Check, Music, Play, Pause, MapPin, Sparkles, Radio, Mic, Star, Eye, Share2 } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { Home, Users, Calendar, Play, Pause, MapPin, Sparkles, Radio, Mic, Star, Share2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
+import { parse, formatRgb } from 'culori';
 
 import siniarbg from './assets/Element/Latar Belakang Siniar fix.PNG';
 import siniarLogo from './assets/Element/Logo Siniar Show.png';
@@ -17,9 +17,6 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [guestName, setGuestName] = useState('teman teman');
-  const [showPosterModal, setShowPosterModal] = useState(false);
-  const [generatedImage, setGeneratedImage] = useState(null);
-  const [imageBlob, setImageBlob] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Initialize Audio Element
@@ -57,59 +54,141 @@ export default function App() {
     }
   };
 
-  // Generate Preview Image (Tahap 1) - Optimized with Blob
-  const handleGenerateImage = async (e) => {
+  // Convert oklch/oklab color strings to rgb using culori
+  const convertColorValue = (colorStr) => {
+    if (!colorStr || (!colorStr.includes('oklch') && !colorStr.includes('oklab'))) return colorStr;
+    
+    let result = colorStr;
+    
+    // Convert all oklch(...) and oklab(...) occurrences
+    result = result.replace(/ok(?:lch|lab)\([^)]+\)/g, (match) => {
+      try {
+        const parsed = parse(match);
+        if (!parsed) return match;
+        const rgb = formatRgb(parsed);
+        return rgb || match;
+      } catch (err) {
+        console.warn('[Color Conversion Failed]', match, err);
+        return match;
+      }
+    });
+    
+    return result;
+  };
+
+  // Handle Generate and Share Invitation
+  const handleShareInvitation = async (e) => {
     e.stopPropagation();
-    if (!coverRef.current) return;
+    if (!coverRef.current || isGenerating) return;
+    
     setIsGenerating(true);
     try {
-      const canvas = await html2canvas(coverRef.current, { 
+      const element = coverRef.current;
+      const canvas = await html2canvas(element, { 
         backgroundColor: '#000000', 
         scale: 2, 
         useCORS: true, 
-        logging: false 
-      });
-      canvas.toBlob((blob) => {
-        if (!blob) throw new Error('Blob gagal dibuat');
-        setImageBlob(blob);
-        setGeneratedImage(URL.createObjectURL(blob));
-      }, 'image/png', 1.0);
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Gagal memproses e-flyer.');
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+        logging: false,
+        onclone: (clonedDoc) => {
+          const clonedWindow = clonedDoc.defaultView || window;
 
-  // Final Share (Tahap 2) - Using stored Blob
-  const handleFinalShare = async () => {
-    try {
-      if (!imageBlob) throw new Error('Tidak ada gambar untuk dibagikan');
-      const file = new File([imageBlob], 'Undangan-Siniar-SHOW.png', { type: 'image/png' });
+          // Properties that can contain color or gradients
+          const colorProperties = [
+            'color',
+            'background-color',
+            'border-color',
+            'border-top-color',
+            'border-right-color',
+            'border-bottom-color',
+            'border-left-color',
+            'outline-color',
+            'text-decoration-color',
+            'fill',
+            'stroke',
+            'box-shadow',
+            'text-shadow',
+            'background-image',
+            'border-image-source'
+          ];
+
+          // Normalize all elements in the cloned document
+          const allElements = clonedDoc.querySelectorAll('*');
+          allElements.forEach((el) => {
+            const computed = clonedWindow.getComputedStyle(el);
+
+            colorProperties.forEach((prop) => {
+              const val = computed.getPropertyValue(prop);
+              if (val && (val.includes('oklch') || val.includes('oklab'))) {
+                const converted = convertColorValue(val);
+                if (converted !== val) {
+                  el.style.setProperty(prop, converted, 'important');
+                }
+              }
+            });
+
+            // Check inline styles
+            const inlineStyle = el.getAttribute('style');
+            if (inlineStyle && (inlineStyle.includes('oklch') || inlineStyle.includes('oklab'))) {
+              const convertedInline = convertColorValue(inlineStyle);
+              el.setAttribute('style', convertedInline);
+            }
+          });
+
+          // Final verification - ensure no oklch/oklab remains
+          let remainingOklch = 0;
+          allElements.forEach((el) => {
+            const computed = clonedWindow.getComputedStyle(el);
+            colorProperties.forEach((prop) => {
+              const val = computed.getPropertyValue(prop);
+              if (val && (val.includes('oklch') || val.includes('oklab'))) {
+                console.error('[OKLCH Still Present]', el.tagName, prop, ':', val);
+                remainingOklch++;
+              }
+            });
+          });
+
+          if (remainingOklch > 0) {
+            console.warn(`[Warning] ${remainingOklch} oklch/oklab properties remain in cloned DOM`);
+          }
+
+          // Adjust greeting positioning for capture image only
+          const greetingH1 = clonedDoc.querySelector('h1');
+          if (greetingH1 && greetingH1.textContent.includes('Halo')) {
+            greetingH1.style.transform = 'translateY(-8px)';
+          }
+        }
+      });
+
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png', 1.0));
+      if (!blob) throw new Error('Blob gagal dibuat');
+
+      const file = new File([blob], 'Undangan-Siniar-SHOW.png', { type: 'image/png' });
 
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({ 
           files: [file], 
-          title: 'Undangan Siniar SHOW' 
+          title: 'Undangan Siniar SHOW',
+          text: `Halo! Saya mengundang Anda ke acara Siniar SHOW. Cek undangannya di sini!`
         });
       } else {
+        const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.href = generatedImage;
+        link.href = url;
         link.download = 'Undangan-Siniar-SHOW.png';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 100);
       }
     } catch (error) {
-      console.error('Share error:', error);
-      alert('Gagal membagikan file. Silakan simpan terlebih dahulu.');
+      if (error.name !== 'AbortError') {
+        console.error('Share error:', error);
+        alert('Gagal membagikan undangan. Silakan coba lagi.');
+      }
+    } finally {
+      setIsGenerating(false);
     }
   };
-
-  // Form & RSVP state
-  const [formData, setFormData] = useState({ name: '', attendance: '1' });
-  const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Countdown timer state targeting Dec 10, 2026
   const [timeLeft, setTimeLeft] = useState({
@@ -165,17 +244,6 @@ export default function App() {
     }, 200);
   };
 
-  // Handle RSVP Submission
-  const handleRsvpSubmit = (e) => {
-    e.preventDefault();
-    setIsSubmitted(true);
-    confetti({
-      particleCount: 170,
-      spread: 90,
-      origin: { y: 0.6 }
-    });
-  };
-
   return (
     <div className="fixed inset-0 w-full h-[100dvh] bg-black flex justify-center items-center font-sans antialiased text-white select-none overflow-hidden m-0 p-0">
       
@@ -204,6 +272,7 @@ export default function App() {
           {/* ================= 1. COVER SCREEN ================= */}
           <div 
             ref={coverRef}
+            data-capture="cover"
             className={`absolute inset-0 w-full h-full z-[60] bg-black flex flex-col items-center justify-center p-6 text-center transition-transform duration-700 ease-in-out ${
               isOpened ? '-translate-y-full pointer-events-none' : 'translate-y-0'
             }`}
@@ -231,7 +300,7 @@ export default function App() {
               <span className="font-['Oswald'] text-xs uppercase tracking-[0.35em] text-yellow-400 font-extrabold block mb-2">
                 OFFICIAL INVITATION
               </span>
-              <h1 className="text-3xl sm:text-4xl font-extrabold italic text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 tracking-tight drop-shadow-[3px_3px_0_rgba(0,0,0,1)] -rotate-1">
+              <h1 className="text-3xl sm:text-4xl font-extrabold italic text-yellow-400 tracking-tight drop-shadow-[3px_3px_0_rgba(0,0,0,1)] -rotate-1">
                 Halo, {guestName}!
               </h1>
               <p className="text-gray-300 text-xs leading-relaxed mt-2 font-['Montserrat'] italic">
@@ -249,11 +318,11 @@ export default function App() {
                 <Sparkles className="w-6 h-6" />
               </button>
               <button
-                onClick={handleGenerateImage}
+                onClick={handleShareInvitation}
                 className="w-full py-3 px-6 bg-transparent border-2 border-yellow-400 text-yellow-400 font-['Bebas_Neue'] text-xl tracking-widest uppercase font-extrabold rounded-2xl shadow-[6px_6px_0_rgba(0,0,0,1)] active:scale-95 transition-all flex items-center justify-center gap-2 rotate-1"
               >
                 <Share2 className="w-5 h-5" />
-                <span>{isGenerating ? 'Memproses...' : 'SHARE KE IG'}</span>
+                <span>{isGenerating ? 'Memproses...' : 'BAGIKAN UNDANGAN'}</span>
               </button>
             </div>
           </div>
@@ -532,25 +601,6 @@ export default function App() {
         </div>
 
       </div>
-
-      {generatedImage && (
-        <div className="fixed inset-0 z-[9999] bg-black/90 flex flex-col items-center justify-center p-4 backdrop-blur-sm">
-          <p className="text-white mb-4 font-bold tracking-widest">PREVIEW E-FLYER</p>
-          <img src={generatedImage} alt="Preview" className="w-[80%] max-w-sm rounded-xl border border-yellow-500/50 shadow-[6px_6px_0_rgba(0,0,0,1)] mb-6" />
-          <div className="flex gap-4">
-            <button onClick={() => {
-              if (generatedImage) URL.revokeObjectURL(generatedImage);
-              setGeneratedImage(null);
-              setImageBlob(null);
-            }} className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-bold border-2 border-black">
-              Batal
-            </button>
-            <button onClick={handleFinalShare} className="px-6 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-300 hover:to-orange-400 text-black rounded-xl font-bold border-2 border-black flex items-center gap-2">
-              Bagikan / Simpan
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
