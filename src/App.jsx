@@ -3,7 +3,7 @@ import { Home, Users, Calendar, Play, Pause, MapPin, Sparkles, Radio, Mic, Star,
 import html2canvas from 'html2canvas';
 import { parse, formatRgb } from 'culori';
 
-import siniarbg from './assets/Element/Latar Belakang Siniar fix.PNG';
+import siniarbg from './assets/Element/Latar Belakang Siniar fix.png';
 import siniarLogo from './assets/Element/Logo Siniar Show.png';
 
 export default function App() {
@@ -322,7 +322,7 @@ export default function App() {
                 className="w-full py-3 px-6 bg-transparent border-2 border-yellow-400 text-yellow-400 font-['Bebas_Neue'] text-xl tracking-widest uppercase font-extrabold rounded-2xl shadow-[6px_6px_0_rgba(0,0,0,1)] active:scale-95 transition-all flex items-center justify-center gap-2 rotate-1"
               >
                 <Share2 className="w-5 h-5" />
-                <span>{isGenerating ? 'Memproses...' : 'BAGIKAN UNDANGAN'}</span>
+                <span>{isGenerating ? 'Memproses...' : 'POST YOUR INVITE!'}</span>
               </button>
             </div>
           </div>
@@ -355,43 +355,48 @@ export default function App() {
 
             {/* ---------------- HOME TAB ---------------- */}
             {activeTab === 'home' && (
-              <div className="w-full min-h-[70vh] flex flex-col items-center justify-center text-center animate-fadeIn py-6">
+              <div className="w-full min-h-[70vh] flex flex-col items-center justify-end text-center animate-fadeIn py-6 pb-48">
                 
-                {/* Small Header on Torn White Paper */}
-                <div className="mb-2 flex flex-col items-center">
-                  <div className="bg-white text-black font-extrabold italic px-4 py-1.5 border-2 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] -rotate-2 inline-block rounded-xs">
-                    <span className="text-xs font-['Oswald'] tracking-[0.25em] uppercase font-bold">
-                      KKP NETWORK PRESENTS
+                {/* Information Group: KKP NETWORK PRESENT, LOGO SINIAR SHOW, LIVE PODCAST 2026, Date/Year */}
+                <div className="w-full flex flex-col items-center gap-5 transform translate-y-16">
+                  
+                  {/* 1. KKP NETWORK PRESENT */}
+                  <div className="flex flex-col items-center">
+                    <div className="bg-white text-black font-extrabold italic px-5 py-2.5 border-2 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] -rotate-2 inline-block rounded-xs">
+                      <span className="text-base font-['Oswald'] tracking-[0.25em] uppercase font-bold">
+                        KKP NETWORK PRESENTS
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 2. LOGO SINIAR SHOW */}
+                  <img 
+                    src={siniarLogo} 
+                    alt="Siniar Show Logo" 
+                    className="w-[105%] sm:w-[460px] max-w-[95%] drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)] -rotate-1 hover:rotate-0 hover:scale-105 transition-all duration-300"
+                  />
+
+                  {/* 3. LIVE PODCAST 2026 */}
+                  <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-yellow-400 text-black border-2 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] -rotate-1">
+                    <span className="w-2.5 h-2.5 rounded-full bg-black animate-ping"></span>
+                    <span className="font-['Oswald'] text-base uppercase tracking-widest font-bold">
+                      Live Podcast 2026
                     </span>
                   </div>
-                </div>
 
-                {/* Official "Siniar SHOW" Logo */}
-                <img 
-                  src={siniarLogo} 
-                  alt="Siniar Show Logo" 
-                  className="w-80 sm:w-96 max-w-[90%] drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)] -rotate-1 hover:rotate-0 hover:scale-105 transition-all duration-300 mb-3"
-                />
+                  {/* 4. Tanggal / Tahun */}
+                  <div className="flex flex-row items-center justify-center gap-5">
+                    {/* 10/12 Badge */}
+                    <div className="px-5 py-2 bg-white text-black font-['Bebas_Neue'] text-4xl tracking-widest rounded-[45%_55%_60%_40%/50%_45%_55%_50%] border-3 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] -rotate-6">
+                      10/12
+                    </div>
 
-                {/* Live Podcast Badge - Matching Theme Colors */}
-                <div className="mb-2 inline-flex items-center gap-2 px-4 py-1 rounded-full bg-yellow-400 text-black border-2 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] -rotate-1">
-                  <span className="w-2 h-2 rounded-full bg-black animate-ping"></span>
-                  <span className="font-['Oswald'] text-xs uppercase tracking-widest font-bold">
-                    Live Podcast 2026
-                  </span>
-                </div>
-
-                {/* Date & Year Container */}
-                <div className="flex flex-row items-center justify-center gap-5 mt-3">
-                  {/* 10/12 Badge */}
-                  <div className="px-4 py-1.5 bg-white text-black font-['Bebas_Neue'] text-3xl tracking-widest rounded-[45%_55%_60%_40%/50%_45%_55%_50%] border-3 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] -rotate-6">
-                    10/12
+                    {/* 2026 Badge */}
+                    <div className="px-5 py-2 bg-white text-black font-['Bebas_Neue'] text-4xl tracking-widest rounded-[55%_45%_40%_60%/45%_55%_45%_55%] border-3 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] rotate-6">
+                      2026
+                    </div>
                   </div>
 
-                  {/* 2026 Badge */}
-                  <div className="px-4 py-1.5 bg-white text-black font-['Bebas_Neue'] text-3xl tracking-widest rounded-[55%_45%_40%_60%/45%_55%_45%_55%] border-3 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] rotate-6">
-                    2026
-                  </div>
                 </div>
 
               </div>
@@ -482,64 +487,64 @@ export default function App() {
 
             {/* ---------------- EVENT TAB ---------------- */}
             {activeTab === 'event' && (
-              <div className="w-full min-h-[70vh] flex flex-col items-center justify-center animate-fadeIn space-y-4 py-2">
+              <div className="w-full min-h-[70vh] flex flex-col items-center justify-center animate-fadeIn space-y-4 py-2 transform translate-y-4">
                 
                 {/* Countdown Card */}
-                <div className="relative bg-black/90 p-4 rounded-2xl border-2 border-white/30 text-center shadow-[5px_5px_0_rgba(0,0,0,1)] rotate-1 w-full max-w-xs">
-                  <span className="block font-['Oswald'] text-xs tracking-[0.25em] text-yellow-400 uppercase font-bold mb-2">
-                    DIGITAL COUNTDOWN
+                <div className="relative bg-black/90 p-5 rounded-2xl border-2 border-white/30 text-center shadow-[5px_5px_0_rgba(0,0,0,1)] rotate-1 w-full max-w-[340px]">
+                  <span className="block font-['Oswald'] text-sm tracking-[0.25em] text-yellow-400 uppercase font-bold mb-2">
+                    DAYS TO GO
                   </span>
-                  <div className="grid grid-cols-3 gap-2 font-['Bebas_Neue']">
-                    <div className="bg-neutral-900 border border-neutral-800 rounded-xl py-2 px-1 flex flex-col items-center">
-                      <span className="text-3xl font-extrabold text-orange-500 leading-none">
+                  <div className="grid grid-cols-3 gap-3 font-['Bebas_Neue']">
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-xl py-2.5 px-1.5 flex flex-col items-center">
+                      <span className="text-4xl font-extrabold text-orange-500 leading-none">
                         {String(timeLeft.days).padStart(2, '0')}
                       </span>
-                      <span className="text-[9px] font-['Montserrat'] text-gray-400 font-bold uppercase mt-1">DAYS</span>
+                      <span className="text-[10px] font-['Montserrat'] text-gray-400 font-bold uppercase mt-1">DAYS</span>
                     </div>
-                    <div className="bg-neutral-900 border border-neutral-800 rounded-xl py-2 px-1 flex flex-col items-center">
-                      <span className="text-3xl font-extrabold text-orange-500 leading-none">
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-xl py-2.5 px-1.5 flex flex-col items-center">
+                      <span className="text-4xl font-extrabold text-orange-500 leading-none">
                         {String(timeLeft.hours).padStart(2, '0')}
                       </span>
-                      <span className="text-[9px] font-['Montserrat'] text-gray-400 font-bold uppercase mt-1">HRS</span>
+                      <span className="text-[10px] font-['Montserrat'] text-gray-400 font-bold uppercase mt-1">HRS</span>
                     </div>
-                    <div className="bg-neutral-900 border border-neutral-800 rounded-xl py-2 px-1 flex flex-col items-center">
-                      <span className="text-3xl font-extrabold text-orange-500 leading-none animate-pulse">
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-xl py-2.5 px-1.5 flex flex-col items-center">
+                      <span className="text-4xl font-extrabold text-orange-500 leading-none animate-pulse">
                         {String(timeLeft.minutes).padStart(2, '0')}
                       </span>
-                      <span className="text-[9px] font-['Montserrat'] text-gray-400 font-bold uppercase mt-1">MINS</span>
+                      <span className="text-[10px] font-['Montserrat'] text-gray-400 font-bold uppercase mt-1">MINS</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Venue Box */}
-                <div className="relative bg-stone-900 border-2 border-yellow-500/70 p-5 rounded-2xl space-y-3 font-['Montserrat'] text-center shadow-[5px_5px_0_rgba(0,0,0,1)] -rotate-1 w-full max-w-xs">
-                  <div className="flex items-center justify-center gap-2 border-b border-gray-800 pb-2">
-                    <MapPin className="w-5 h-5 text-yellow-400" />
-                    <h3 className="font-['Oswald'] text-base font-extrabold tracking-wider text-yellow-400 uppercase italic">
+                <div className="relative bg-stone-900 border-2 border-yellow-500/70 p-6 rounded-2xl space-y-4 font-['Montserrat'] text-center shadow-[6px_6px_0_rgba(0,0,0,1)] -rotate-1 w-full max-w-[340px]">
+                  <div className="flex items-center justify-center gap-2 border-b border-gray-800 pb-3">
+                    <MapPin className="w-6 h-6 text-yellow-400" />
+                    <h3 className="font-['Oswald'] text-lg font-extrabold tracking-wider text-yellow-400 uppercase italic">
                       WAKTU & LOKASI
                     </h3>
                   </div>
 
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">WAKTU ACARA</span>
-                    <p className="font-extrabold text-sm sm:text-base text-white italic">Kamis, 10 Desember 2026</p>
-                    <p className="text-xs text-yellow-400 font-bold">Open Gate: 19:30 WIB | Show: 20:00 WIB</p>
+                    <span className="text-[11px] uppercase font-bold text-gray-400 tracking-wider block mb-1">WAKTU ACARA</span>
+                    <p className="font-extrabold text-base sm:text-lg text-white italic">Kamis, 10 Desember 2026</p>
+                    <p className="text-sm text-yellow-400 font-bold">Open Gate: 19:30 WIB | Show: 20:00 WIB</p>
                   </div>
 
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">LOKASI VENUE</span>
-                    <p className="font-extrabold text-sm sm:text-base text-white italic">CGV Palembang</p>
-                    <p className="text-xs text-gray-300 font-semibold">Social Market</p>
+                    <span className="text-[11px] uppercase font-bold text-gray-400 tracking-wider block mb-1">LOKASI VENUE</span>
+                    <p className="font-extrabold text-base sm:text-lg text-white italic">CGV Social Market (SoMa) Palembang</p>
+                    <p className="text-sm text-gray-300 font-semibold">Teather 1 Audi</p>
                   </div>
                 </div>
 
                 {/* Map Button */}
                 <div 
-                  onClick={() => window.open('https://maps.google.com', '_blank')}
-                  className="border-2 border-dashed border-white/60 bg-black/80 p-3.5 rounded-2xl flex items-center justify-center gap-2 font-['Montserrat'] text-xs font-extrabold uppercase tracking-wider hover:bg-white hover:text-black transition-all cursor-pointer shadow-[4px_4px_0_rgba(0,0,0,1)] rotate-1 w-full max-w-xs"
+                  onClick={() => window.open('https://maps.app.goo.gl/X5qiB6ENhhwL8x457', '_blank')}
+                  className="border-2 border-dashed border-white/60 bg-black/80 p-4 rounded-2xl flex items-center justify-center gap-2 font-['Montserrat'] text-sm font-extrabold uppercase tracking-wider hover:bg-white hover:text-black transition-all cursor-pointer shadow-[5px_5px_0_rgba(0,0,0,1)] rotate-1 w-full max-w-[340px]"
                 >
                   <span>OPEN GOOGLE MAPS</span>
-                  <MapPin className="w-4 h-4" />
+                  <MapPin className="w-5 h-5" />
                 </div>
 
               </div>
