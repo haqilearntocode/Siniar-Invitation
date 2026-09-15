@@ -3,7 +3,7 @@ import { Home, Users, Calendar, Play, Pause, MapPin, Sparkles, Radio, Mic, Star,
 import html2canvas from 'html2canvas';
 import { parse, formatRgb } from 'culori';
 
-import siniarbg from './assets/Element/Latar Belakang Siniar fix.png';
+import siniarbg from './assets/Element/Latar Belakang Siniar fix.PNG';
 import siniarLogo from './assets/Element/Logo Siniar Show.png';
 
 export default function App() {
