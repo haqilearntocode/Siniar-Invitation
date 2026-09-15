@@ -534,7 +534,7 @@ export default function App() {
                   <div>
                     <span className="text-[11px] uppercase font-bold text-gray-400 tracking-wider block mb-1">LOKASI VENUE</span>
                     <p className="font-extrabold text-base sm:text-lg text-white italic">CGV Social Market (SoMa) Palembang</p>
-                    <p className="text-sm text-gray-300 font-semibold">Teather 1 Audi</p>
+                    <p className="text-sm text-gray-300 font-semibold">Teather Audi 1</p>
                   </div>
                 </div>
 
