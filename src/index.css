@@ -53,12 +53,15 @@
 
 /* Custom scrollbar for mobile container */
 ::-webkit-scrollbar {
-  width: 4px;
+  display: none;
+  width: 0;
+  height: 0;
 }
-::-webkit-scrollbar-track {
-  background: #000;
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior: none;
 }
-::-webkit-scrollbar-thumb {
-  background: #ff9900;
-  border-radius: 4px;
+html, body {
+  overscroll-behavior: none;
 }
